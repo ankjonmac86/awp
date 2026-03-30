@@ -1,0 +1,267 @@
+/* ============================================
+   INVENTORY MODULE STYLES
+   ============================================ */
+
+/* Loading Modal for Inventory */
+.inventory-loading-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.inventory-loading-modal .loading-modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  min-width: 150px;
+}
+
+.inventory-loading-modal .loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4361ee;
+  border-radius: 50%;
+  animation: inventorySpin 1s linear infinite;
+  margin: 0 auto 15px auto;
+}
+
+.inventory-loading-modal p {
+  color: #2d3748;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+@keyframes inventorySpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Table Loader */
+.table-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px;
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4361ee;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Inventory List Table Specific */
+.inventory-list-table td:last-child {
+  text-align: center;
+}
+
+/* Category Selection Styles */
+#addNewCategoryFields {
+  transition: all 0.3s ease;
+}
+
+#addNewCategoryFields input,
+#addNewCategoryFields textarea {
+  background: white;
+}
+
+/* Unit Price Field */
+#newUnitPrice {
+  background: #f7fafc;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+/* Form Row for Inventory */
+.inventory-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+/* Summary Cards for Inventory */
+.inventory-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.inventory-summary-card {
+  background: linear-gradient(135deg, #4361ee, #7209b7);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+}
+
+.inventory-summary-card h4 {
+  font-size: 13px;
+  font-weight: 400;
+  margin-bottom: 8px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.inventory-summary-card .value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Filter Bar */
+.inventory-filter-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.inventory-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.inventory-filter-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inventory-filter-group input,
+.inventory-filter-group select {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 13px;
+  min-width: 150px;
+}
+
+.inventory-filter-group input:focus,
+.inventory-filter-group select:focus {
+  outline: none;
+  border-color: #4361ee;
+}
+
+/* Action Button Styles */
+.inventory-action-btn {
+  background: #4361ee;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.inventory-action-btn:hover {
+  background: #3a56d4;
+  transform: translateY(-1px);
+}
+
+.inventory-action-btn.danger {
+  background: #ef476f;
+}
+
+.inventory-action-btn.danger:hover {
+  background: #d32f2f;
+}
+
+.inventory-action-btn.success {
+  background: #06d6a0;
+}
+
+.inventory-action-btn.success:hover {
+  background: #05b084;
+}
+
+/* Status Badges */
+.inventory-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.inventory-status.in-stock {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.inventory-status.low-stock {
+  background: #fed7aa;
+  color: #92400e;
+}
+
+.inventory-status.out-of-stock {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .inventory-summary {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .inventory-summary-card .value {
+    font-size: 22px;
+  }
+
+  .inventory-filter-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .inventory-filter-group {
+    width: 100%;
+  }
+
+  .inventory-filter-group input,
+  .inventory-filter-group select {
+    width: 100%;
+  }
+
+  .inventory-form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .inventory-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-summary-card .value {
+    font-size: 20px;
+  }
+}

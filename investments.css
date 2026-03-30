@@ -1,0 +1,207 @@
+/* ============================================
+   INVESTMENT MODULE STYLES
+   ============================================ */
+
+/* Loading Modal */
+.investment-loading-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.investment-loading-modal .loading-modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 150px;
+}
+
+.investment-loading-modal .loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4361ee;
+  border-radius: 50%;
+  animation: investmentSpin 1s linear infinite;
+  margin: 0 auto 15px auto;
+}
+
+@keyframes investmentSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Investment Cards */
+.investment-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.investment-card {
+  background: linear-gradient(135deg, #4361ee, #7209b7);
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+  text-align: center;
+}
+
+.investment-card h4 {
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.investment-card .value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.investment-card .sub-value {
+  font-size: 12px;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+/* Investment Type Badges */
+.investment-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.investment-badge.fd {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.investment-badge.tbill {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.investment-badge.bond {
+  background: #fed7aa;
+  color: #92400e;
+}
+
+/* Maturity Status */
+.maturity-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.maturity-status.matured {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.maturity-status.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.maturity-status.near-maturity {
+  background: #fed7aa;
+  color: #92400e;
+}
+
+/* Interest Rate Highlight */
+.interest-rate {
+  font-weight: 700;
+  color: #4361ee;
+}
+
+/* Rollover Info */
+.rollover-info {
+  background: #f7fafc;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-top: 10px;
+  font-size: 12px;
+  border-left: 3px solid #4361ee;
+}
+
+.rollover-info i {
+  color: #4361ee;
+  margin-right: 8px;
+}
+
+/* Report Filters */
+.investment-filters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+}
+
+.filter-group input,
+.filter-group select {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 13px;
+  min-width: 150px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .investment-summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .investment-card .value {
+    font-size: 22px;
+  }
+
+  .investment-filters {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .filter-group input,
+  .filter-group select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .investment-summary-cards {
+    grid-template-columns: 1fr;
+  }
+}
