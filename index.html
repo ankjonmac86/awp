@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accounts Workspace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/pv.css">
+  <link rel="stylesheet" href="assets/css/inventory.css">
+  <link rel="stylesheet" href="assets/css/assets.css">
+  <link rel="stylesheet" href="assets/css/investments.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+      <div class="nav-left">
+        <button class="menu-toggle-btn" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo">
+          <i class="fas fa-chart-line"></i>
+          <span>Accounts Workspace</span>
+        </div>
+      </div>
+      
+      <div class="nav-right">
+        <div class="user-menu" onclick="toggleUserMenu()">
+          <i class="fas fa-user-circle"></i>
+          <span id="userName">Loading...</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <a href="#" onclick="showProfile()">
+            <i class="fas fa-user"></i> Profile
+          </a>
+          <a href="#" onclick="showSettings()">
+            <i class="fas fa-cog"></i> Settings
+          </a>
+          <hr>
+          <a href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-menu">
+        <!-- Dashboard -->
+        <div class="menu-item" onclick="loadModule('dashboard')">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </div>
+
+        <!-- Payment Voucher -->
+        <div class="menu-item" onclick="loadModule('paymentVoucher')">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Payment Voucher</span>
+        </div>
+
+        <!-- Inventory Management Dropdown -->
+        <div class="menu-item has-dropdown" onclick="toggleSubmenu('inventorySubmenu')">
+          <i class="fas fa-boxes"></i>
+          <span>Inventory Mgt</span>
+          <i class="fas fa-chevron-right dropdown-icon" id="inventoryIcon"></i>
+        </div>
+        <div class="submenu" id="inventorySubmenu">
+          <div class="submenu-item" onclick="loadModule('inventoryAdd')">
+            <i class="fas fa-plus-circle"></i> Add Inventory
+          </div>
+          <div class="submenu-item" onclick="loadModule('inventoryReport')">
+            <i class="fas fa-chart-bar"></i> View Inventory Report
+          </div>
+        </div>
+
+        <!-- Fixed Asset Dropdown -->
+        <div class="menu-item has-dropdown" onclick="toggleSubmenu('assetSubmenu')">
+          <i class="fas fa-building"></i>
+          <span>Fixed Asset</span>
+          <i class="fas fa-chevron-right dropdown-icon" id="assetIcon"></i>
+        </div>
+        <div class="submenu" id="assetSubmenu">
+          <div class="submenu-item" onclick="loadModule('addAsset')">
+            <i class="fas fa-plus-circle"></i> Add New Asset
+          </div>
+          <div class="submenu-item" onclick="loadModule('viewAssetRegister')">
+            <i class="fas fa-list"></i> View Asset Register
+          </div>
+        </div>
+
+        <!-- Investment Management Dropdown -->
+        <div class="menu-item has-dropdown" onclick="toggleSubmenu('investmentSubmenu')">
+          <i class="fas fa-chart-line"></i>
+          <span>Investment Mgt</span>
+          <i class="fas fa-chevron-right dropdown-icon" id="investmentIcon"></i>
+        </div>
+        <div class="submenu" id="investmentSubmenu">
+          <div class="submenu-item" onclick="loadModule('investmentAdd')">
+            <i class="fas fa-plus-circle"></i> Add New
+          </div>
+          <div class="submenu-item" onclick="loadModule('investmentReport')">
+            <i class="fas fa-file-alt"></i> Investment Report
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="mainContent">
+      <div class="content-wrapper">
+        <!-- Dashboard will be loaded here by default -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Global Toast Container -->
+  <div id="global-toast" style="display: none;"></div>
+
+  <!-- Configuration -->
+  <script src="config.js"></script>
+  
+  <!-- API Module -->
+  <script src="assets/js/api.js"></script>
+  
+  <!-- Core Scripts -->
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/pv.js"></script>
+  <script src="assets/js/inventory.js"></script>
+  <script src="assets/js/assets.js"></script>
+  <script src="assets/js/investments.js"></script>
+</body>
+</html>
