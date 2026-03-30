@@ -1,0 +1,343 @@
+<div class="investment-container">
+  <div class="investment-header">
+    <h1>Add New Investment</h1>
+  </div>
+
+  <!-- New Investment Form -->
+  <form id="newInvestmentForm" onsubmit="event.preventDefault(); submitNewInvestment();">
+    <div class="form-row-two">
+      <div class="form-group">
+        <label for="investmentType">Investment Type:</label>
+        <select id="investmentType" name="investmentType" onchange="handleInvestmentTypeChange()" required>
+          <option value="">Select Investment Type</option>
+          <option value="Fixed Deposit">Fixed Deposit</option>
+          <option value="Treasury Bills">Treasury Bills</option>
+          <option value="Bonds">Bonds</option>
+          <option value="add-new">+ Add New Type</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="investmentDate">Investment Date:</label>
+        <input type="date" id="investmentDate" name="investmentDate" required onchange="calculateMaturityDate()">
+      </div>
+    </div>
+
+    <!-- Add New Investment Type Fields (Hidden by default) -->
+    <div id="addNewInvestmentTypeFields" style="display: none;">
+      <div class="form-group">
+        <label for="newInvestmentType">New Investment Type:</label>
+        <input type="text" id="newInvestmentType" name="newInvestmentType" placeholder="e.g., Savings Bond">
+      </div>
+    </div>
+
+    <div class="form-row-two">
+      <div class="form-group">
+        <label for="investmentCode">Investment Code:</label>
+        <input type="text" id="investmentCode" name="investmentCode" readonly placeholder="Auto-generated">
+      </div>
+
+      <div class="form-group">
+        <label for="bankName">Bank Name:</label>
+        <select id="bankName" name="bankName" required>
+          <option value="">Select Bank</option>
+          <option value="Fidelity">Fidelity</option>
+          <option value="CBG">CBG</option>
+          <option value="Ecobank">Ecobank</option>
+          <option value="GCB">GCB</option>
+          <option value="add-new">+ Add New Bank</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Add New Bank Fields (Hidden by default) -->
+    <div id="addNewBankFields" style="display: none;">
+      <div class="form-group">
+        <label for="newBankName">New Bank Name:</label>
+        <input type="text" id="newBankName" name="newBankName" placeholder="e.g., Bank of Ghana">
+      </div>
+    </div>
+
+    <div class="form-row-two">
+      <div class="form-group">
+        <label for="amount">Amount (GHc):</label>
+        <input type="number" id="amount" name="amount" step="0.01" placeholder="0.00" required oninput="calculateMaturityAmount()">
+      </div>
+
+      <div class="form-group">
+        <label for="interestRate">Interest Rate (%):</label>
+        <input type="number" id="interestRate" name="interestRate" step="0.01" placeholder="0.00" required oninput="calculateMaturityAmount()">
+      </div>
+    </div>
+
+    <div class="form-row-two">
+      <div class="form-group">
+        <label for="duration">Duration (Days):</label>
+        <input type="number" id="duration" name="duration" step="1" placeholder="0" required oninput="calculateMaturityDate()">
+      </div>
+
+      <div class="form-group">
+        <label for="maturityDate">Maturity Date:</label>
+        <input type="date" id="maturityDate" name="maturityDate" required onchange="calculateMaturityAmount()">
+      </div>
+    </div>
+
+    <!-- Calculated Fields (Read-only) -->
+    <div class="calculated-fields">
+      <div class="form-group">
+        <label for="interestAmount">Interest Amount (GHc):</label>
+        <input type="text" id="interestAmount" name="interestAmount" readonly placeholder="0.00">
+      </div>
+
+      <div class="form-group">
+        <label for="maturityAmount">Maturity Amount (GHc):</label>
+        <input type="text" id="maturityAmount" name="maturityAmount" readonly placeholder="0.00">
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">
+      <i class="fas fa-plus"></i> Add Investment
+    </button>
+  </form>
+</div>
+
+<!-- Modal for Messages -->
+<div class="modal" id="messageModal" style="display: none;">
+  <div class="modal-content">
+    <div id="modalMessage"></div>
+    <button class="modal-close-btn" onclick="closeInvestmentModal()">Close</button>
+  </div>
+</div>
+
+<style>
+  .investment-container {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .investment-header {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #4361ee;
+    padding-bottom: 12px;
+  }
+
+  .investment-header h1 {
+    color: #2d3748;
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    margin-bottom: 6px;
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+  }
+
+  .form-group input[readonly] {
+    background: #f7fafc;
+    cursor: not-allowed;
+  }
+
+  .form-row-two {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .calculated-fields {
+    background: #f7fafc;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+    border: 1px solid #e2e8f0;
+  }
+
+  .calculated-fields .form-group {
+    margin-bottom: 10px;
+  }
+
+  .calculated-fields .form-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .calculated-fields input {
+    font-weight: 600;
+    color: #4361ee;
+  }
+
+  #addNewInvestmentTypeFields,
+  #addNewBankFields {
+    background: #f7fafc;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 15px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    max-width: 250px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #4361ee, #7209b7);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 25px auto 0 auto;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    text-align: center;
+    animation: modalSlideIn 0.3s ease;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  #modalMessage {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #2d3748;
+    line-height: 1.5;
+    min-height: 50px;
+  }
+
+  .modal-close-btn {
+    padding: 10px 28px;
+    background: #4361ee;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .modal-close-btn:hover {
+    background: #3a56d4;
+    transform: translateY(-1px);
+  }
+
+  .success-message {
+    color: #06d6a0;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .error-message {
+    color: #ef476f;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .investment-container {
+      padding: 20px;
+    }
+
+    .investment-header h1 {
+      font-size: 20px;
+    }
+
+    .form-row-two {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .form-group label {
+      font-size: 11px;
+    }
+
+    .form-group input,
+    .form-group select {
+      font-size: 13px;
+      padding: 8px 10px;
+    }
+
+    .calculated-fields {
+      padding: 12px;
+    }
+
+    .submit-btn {
+      max-width: 100%;
+      padding: 10px 24px;
+      font-size: 14px;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      padding: 25px;
+    }
+  }
+</style>

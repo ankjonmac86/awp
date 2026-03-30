@@ -1,0 +1,710 @@
+<div class="investment-report-container">
+  <div class="report-header">
+    <h1>Investment Reports</h1>
+  </div>
+
+  <!-- Tabs and Controls Row -->
+  <div class="report-controls-row">
+    <div class="report-tabs">
+      <button class="tab-btn active" onclick="switchInvestmentReportTab('purchaseReport')">
+        <i class="fas fa-receipt"></i> Purchase Report
+      </button>
+      <button class="tab-btn" onclick="switchInvestmentReportTab('fullReport')">
+        <i class="fas fa-chart-bar"></i> Full Report
+      </button>
+      <button class="tab-btn" onclick="switchInvestmentReportTab('interestReport')">
+        <i class="fas fa-percent"></i> Interest Report
+      </button>
+      <button class="tab-btn" onclick="switchInvestmentReportTab('maturedReport')">
+        <i class="fas fa-check-circle"></i> Matured
+      </button>
+    </div>
+
+    <div class="report-controls">
+      <!-- Purchase Report Controls -->
+      <div class="control-group" id="purchaseControls" style="display: flex;">
+        <div class="compact-date-input">
+          <label for="purchaseFromDate">From:</label>
+          <input type="date" id="purchaseFromDate" onchange="loadPurchaseReport()">
+        </div>
+        <div class="compact-date-input">
+          <label for="purchaseToDate">To:</label>
+          <input type="date" id="purchaseToDate" onchange="loadPurchaseReport()">
+        </div>
+      </div>
+
+      <!-- Full Report Controls -->
+      <div class="control-group" id="fullReportControls" style="display: none;">
+        <div class="compact-date-input">
+          <label for="fullReportToDate">As At:</label>
+          <input type="date" id="fullReportToDate" onchange="loadFullInvestmentReport()">
+        </div>
+        <div class="compact-selector">
+          <label for="reportTypeSelect">Group By:</label>
+          <select id="reportTypeSelect" onchange="handleReportTypeChange()">
+            <option value="">Select</option>
+            <option value="byType">Investment Type</option>
+            <option value="byBank">Bank</option>
+            <option value="byDuration">Duration Range</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Interest Report Controls -->
+      <div class="control-group" id="interestControls" style="display: none;">
+        <div class="compact-date-input">
+          <label for="interestFromDate">From:</label>
+          <input type="date" id="interestFromDate" onchange="loadInterestReport()">
+        </div>
+        <div class="compact-date-input">
+          <label for="interestToDate">To:</label>
+          <input type="date" id="interestToDate" onchange="loadInterestReport()">
+        </div>
+      </div>
+
+      <!-- Matured Report Controls -->
+      <div class="control-group" id="maturedControls" style="display: none;">
+        <div class="control-info">
+          <i class="fas fa-info-circle"></i>
+          <span>Showing all matured investments</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Purchase Report Tab -->
+  <div class="tab-content active" id="purchaseReport">
+    <div class="report-table-wrapper">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Investment Code</th>
+            <th>Bank Name</th>
+            <th>Investment Type</th>
+            <th>Amount (GHc)</th>
+            <th>Interest Rate (%)</th>
+            <th>Duration (Days)</th>
+            <th>Investment Date</th>
+          </tr>
+        </thead>
+        <tbody id="purchaseReportBody">
+          <tr><td colspan="7" class="loading-cell">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Full Report Tab -->
+  <div class="tab-content" id="fullReport">
+    <div id="fullReportContainer"></div>
+  </div>
+
+  <!-- Interest Report Tab -->
+  <div class="tab-content" id="interestReport">
+    <div id="interestReportContainer"></div>
+  </div>
+
+  <!-- Matured Investments Tab -->
+  <div class="tab-content" id="maturedReport">
+    <div class="report-table-wrapper">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Investment Code</th>
+            <th>Bank Name</th>
+            <th>Investment Type</th>
+            <th>Amount (GHc)</th>
+            <th>Interest Rate (%)</th>
+            <th>Duration (Days)</th>
+            <th>Investment Date</th>
+            <th>Maturity Date</th>
+            <th>Maturity Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="maturedReportBody">
+          <tr><td colspan="10" class="loading-cell">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Action Dropdown Portal -->
+  <div class="action-dropdown-portal" id="investmentActionPortal" style="display: none;"></div>
+</div>
+
+<!-- Rollover Modal -->
+<div class="rollover-modal" id="rolloverModal" style="display: none;">
+  <div class="rollover-modal-content">
+    <div class="rollover-modal-header">
+      <h2>Rollover Investment</h2>
+      <button class="rollover-modal-close" onclick="closeRolloverModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form id="rolloverForm" onsubmit="event.preventDefault(); submitRolloverInvestment();">
+      <div class="form-row-two">
+        <div class="form-group">
+          <label for="rolloverInvestmentType">Investment Type:</label>
+          <select id="rolloverInvestmentType" onchange="handleRolloverInvestmentTypeChange()" required>
+            <option value="">Select Investment Type</option>
+            <option value="Fixed Deposit">Fixed Deposit</option>
+            <option value="Treasury Bills">Treasury Bills</option>
+            <option value="Bonds">Bonds</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rolloverInvestmentDate">Investment Date:</label>
+          <input type="date" id="rolloverInvestmentDate" required onchange="calculateRolloverMaturityDate()">
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div class="form-group">
+          <label for="rolloverInvestmentCode">Investment Code:</label>
+          <input type="text" id="rolloverInvestmentCode" readonly placeholder="Auto-generated">
+        </div>
+        <div class="form-group">
+          <label for="rolloverBankName">Bank Name:</label>
+          <select id="rolloverBankName" required>
+            <option value="">Select Bank</option>
+            <option value="Fidelity">Fidelity</option>
+            <option value="CBG">CBG</option>
+            <option value="Ecobank">Ecobank</option>
+            <option value="GCB">GCB</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div class="form-group">
+          <label for="rolloverAmount">Amount (GHc):</label>
+          <input type="number" id="rolloverAmount" step="0.01" placeholder="0.00" required oninput="calculateRolloverMaturityAmount()">
+        </div>
+        <div class="form-group">
+          <label for="rolloverInterestRate">Interest Rate (%):</label>
+          <input type="number" id="rolloverInterestRate" step="0.01" placeholder="0.00" required oninput="calculateRolloverMaturityAmount()">
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div class="form-group">
+          <label for="rolloverDuration">Duration (Days):</label>
+          <input type="number" id="rolloverDuration" step="1" placeholder="0" required oninput="calculateRolloverMaturityDate()">
+        </div>
+        <div class="form-group">
+          <label for="rolloverMaturityDate">Maturity Date:</label>
+          <input type="date" id="rolloverMaturityDate" required onchange="calculateRolloverMaturityAmount()">
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div class="form-group">
+          <label for="rolloverInterestAmount">Interest Amount (GHc):</label>
+          <input type="text" id="rolloverInterestAmount" readonly>
+        </div>
+        <div class="form-group">
+          <label for="rolloverMaturityAmount">Maturity Amount (GHc):</label>
+          <input type="text" id="rolloverMaturityAmount" readonly>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn-cancel" onclick="closeRolloverModal()">Cancel</button>
+        <button type="submit" class="modal-btn-save">Save Rollover</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .investment-report-container {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .report-header {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #4361ee;
+    padding-bottom: 12px;
+  }
+
+  .report-header h1 {
+    color: #2d3748;
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .report-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+    flex-wrap: wrap;
+  }
+
+  .report-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    color: #6c757d;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn:hover {
+    color: #4361ee;
+  }
+
+  .tab-btn.active {
+    color: #4361ee;
+    border-bottom-color: #4361ee;
+  }
+
+  .report-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .control-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .compact-date-input {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 6px 12px;
+  }
+
+  .compact-date-input:hover {
+    border-color: #4361ee;
+  }
+
+  .compact-date-input label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #2d3748;
+    text-transform: uppercase;
+  }
+
+  .compact-date-input input {
+    padding: 5px 8px;
+    border: none;
+    font-size: 12px;
+    background: transparent;
+  }
+
+  .compact-date-input input:focus {
+    outline: none;
+  }
+
+  .compact-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 6px 12px;
+  }
+
+  .compact-selector label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #2d3748;
+    text-transform: uppercase;
+  }
+
+  .compact-selector select {
+    padding: 5px 8px;
+    border: none;
+    font-size: 12px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .compact-selector select:focus {
+    outline: none;
+  }
+
+  .control-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #e3f2fd;
+    border-radius: 8px;
+    color: #1565c0;
+    font-size: 12px;
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.3s;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .report-table-wrapper {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .report-table thead {
+    background: #f7fafc;
+  }
+
+  .report-table th {
+    padding: 12px 10px;
+    text-align: center;
+    font-weight: 700;
+    color: #2d3748;
+    border-bottom: 2px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+
+  .report-table th:last-child {
+    border-right: none;
+  }
+
+  .report-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    color: #4a5568;
+    text-align: center;
+  }
+
+  .report-table td:last-child {
+    border-right: none;
+  }
+
+  .report-table tbody tr:hover {
+    background: #f9fafb;
+  }
+
+  .loading-cell {
+    text-align: center;
+    color: #a0aec0;
+    font-style: italic;
+    padding: 40px !important;
+  }
+
+  .action-btn {
+    background: #4361ee;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .action-btn:hover {
+    background: #3a56d4;
+    transform: translateY(-1px);
+  }
+
+  .action-dropdown-portal {
+    position: fixed;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 150px;
+  }
+
+  .action-dropdown-content {
+    padding: 8px 0;
+  }
+
+  .dropdown-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .dropdown-item:hover {
+    background: #f7fafc;
+    color: #4361ee;
+  }
+
+  /* Grouped Report Styles */
+  .grouped-report {
+    margin-bottom: 25px;
+  }
+
+  .group-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #4361ee, #7209b7);
+    padding: 12px 16px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .group-table-wrapper {
+    border: 1px solid #e2e8f0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    overflow-x: auto;
+  }
+
+  .group-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  .group-table thead {
+    background: #f7fafc;
+  }
+
+  .group-table th {
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .group-table td {
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    text-align: center;
+  }
+
+  .subtotal-row {
+    background: #f0f4ff;
+    border-top: 2px solid #4361ee;
+    border-bottom: 2px solid #4361ee;
+    font-weight: 600;
+  }
+
+  .subtotal-row td {
+    padding: 10px 8px !important;
+    color: #4361ee;
+    background: #f0f4ff !important;
+  }
+
+  .grand-total-report {
+    margin-top: 25px;
+  }
+
+  .grand-total-row {
+    background: #e8f8f3;
+    border: 2px solid #06d6a0;
+    font-weight: 700;
+  }
+
+  .grand-total-row td {
+    padding: 12px 8px !important;
+    color: #118d57;
+    background: #e8f8f3 !important;
+  }
+
+  /* Rollover Modal */
+  .rollover-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+
+  .rollover-modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 700px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+  }
+
+  .rollover-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .rollover-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .rollover-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #a0aec0;
+  }
+
+  .rollover-modal-close:hover {
+    color: #2d3748;
+  }
+
+  #rolloverForm {
+    padding: 20px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .modal-btn-cancel,
+  .modal-btn-save {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .modal-btn-cancel {
+    background: #e2e8f0;
+    border: none;
+    color: #2d3748;
+  }
+
+  .modal-btn-save {
+    background: linear-gradient(135deg, #4361ee, #7209b7);
+    border: none;
+    color: white;
+  }
+
+  .modal-btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+  }
+
+  @media (max-width: 992px) {
+    .report-controls-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .report-controls {
+      width: 100%;
+    }
+
+    .control-group {
+      flex-wrap: wrap;
+    }
+
+    .compact-date-input,
+    .compact-selector {
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .investment-report-container {
+      padding: 15px;
+    }
+
+    .report-header h1 {
+      font-size: 20px;
+    }
+
+    .report-tabs {
+      gap: 4px;
+    }
+
+    .tab-btn {
+      padding: 8px 12px;
+      font-size: 11px;
+      flex: 1;
+    }
+
+    .control-group {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .compact-date-input,
+    .compact-selector {
+      width: 100%;
+    }
+
+    .report-table th,
+    .report-table td {
+      padding: 8px 6px;
+      font-size: 10px;
+    }
+  }
+</style>

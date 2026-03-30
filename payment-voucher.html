@@ -1,0 +1,278 @@
+<div class="main-layout">
+  <div class="form-container">
+    <div class="form-header" style="position: relative; text-align: center;">
+      <h1>VOUCHER</h1>
+      <div id="pvNumberDisplay" style="position: absolute; right: 20px; top: 0; font-weight: bold; font-size: 1.2em;"></div>
+    </div>
+    <form id="pvForm" onsubmit="event.preventDefault(); submitForm();">
+      <div class="form-fields">
+        <div class="form-row">
+          <div class="form-field top-row-field">
+            <label for="voucherType">Voucher Type:</label>
+            <select id="voucherType" onchange="updateVoucherTypeFields()">
+              <option value="Payment Voucher">Funds Transfer</option>
+              <option value="Cash Payment Voucher">Cash Payment Voucher</option>
+              <option value="Cheque Payment Voucher">Cheque Payment Voucher</option>
+            </select>
+          </div>
+          <div class="form-field top-row-field">
+            <label for="department">Department:</label>
+            <select id="department" class="department-select">
+              <option value="Accounts">Accounts</option>
+              <option value="Finance">Finance</option>
+              <option value="Operations">Operations</option>
+              <option value="HR">Human Resources</option>
+              <option value="IT">Information Technology</option>
+            </select>
+          </div>
+          <div class="form-field top-row-field">
+            <label for="accountCode">Account Code:</label>
+            <input type="text" id="accountCode" class="account-code-input">
+          </div>
+        </div>
+        <div class="form-row" style="display:none;">
+          <div class="form-field" id="pvNumber-container">
+            <label for="pvNumber">PV Number:</label>
+            <input type="text" id="pvNumber" readonly>
+          </div>
+          <div class="form-field" id="date-container">
+            <label for="date">Date:</label>
+            <input type="date" id="date" readonly>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="invoiceNo">Invoice No.:</label>
+            <input type="text" id="invoiceNo">
+          </div>
+          <div class="form-field">
+            <label for="invoiceDate">Invoice Date:</label>
+            <input type="date" id="invoiceDate">
+          </div>
+          <div class="form-field">
+            <label for="address">Address:</label>
+            <input type="text" id="address">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="payableTo">Payable to:</label>
+            <input type="text" id="payableTo">
+          </div>
+          <div class="form-field">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" step="0.01">
+          </div>
+          <div class="form-field" style="flex: 0 0 auto; min-width: 220px;">
+            <div class="checkbox-container">
+              <input type="checkbox" id="withholdingTaxCheckbox" onchange="toggleWithholdingTax()">
+              <label for="withholdingTaxCheckbox">Withholding Tax</label>
+            </div>
+            <input type="number" id="withholdingTaxAmount" step="0.01" style="display: none;">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field" style="flex: 2;">
+            <label for="transactionDetails">Details of Transaction:</label>
+            <textarea id="transactionDetails"></textarea>
+          </div>
+          <div class="form-field" id="bankField">
+            <label for="bank">Bank:</label>
+            <input type="text" id="bank">
+          </div>
+          <div class="form-field" id="chequeNumberField">
+            <label for="chequeNumber">Cheque Number:</label>
+            <input type="text" id="chequeNumber">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="requestedBy">Requested By:</label>
+            <input type="text" id="requestedBy">
+          </div>
+          <div class="form-field">
+            <label for="reviewedBy">Reviewed By:</label>
+            <input type="text" id="reviewedBy">
+          </div>
+          <div class="form-field">
+            <label for="authorizedBy">Authorised By:</label>
+            <input type="text" id="authorizedBy">
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="submit-button">Submit</button>
+      <button type="button" id="updateButton" class="submit-button update-button" style="display: none;" onclick="updateForm()">Update Voucher</button>
+    </form>
+  </div>
+  <div class="saved-voucher-table">
+    <div class="svt-title">SAVED VOUCHER</div>
+    <div class="svt-section">
+      <div class="svt-header">CASH PAYMENT</div>
+      <div class="svt-list" id="cash-payment-list"></div>
+    </div>
+    <div class="svt-section">
+      <div class="svt-header">CHEQUE</div>
+      <div class="svt-list" id="cheque-list"></div>
+    </div>
+    <div class="svt-section">
+      <div class="svt-header">FUNDS TRANSFER</div>
+      <div class="svt-list" id="payment-list"></div>
+    </div>
+  </div>
+  <div id="pv-dropdown-portal"></div>
+</div>
+
+<!-- Voucher Preview Modal -->
+<div class="voucher-modal" id="voucher-preview-modal">
+  <div class="voucher-modal-content">
+    <div class="voucher-page" id="voucher-print">
+      <div class="voucher-header" style="text-align:center;">
+        <div class="voucher-title"><b>GAP MICROFINANCE LTD</b></div>
+        <div class="voucher-type" id="voucherTypeHeading"><b>PAYMENT VOUCHER</b></div>
+      </div>
+      <div class="voucher-body">
+        <div class="voucher-row" style="justify-content: flex-end;">
+          <div class="pv-number-value" id="preview-pvNumber" style="font-weight:bold; text-align:right;"></div>
+        </div>
+        <div style="height: 15px;"></div>
+        <div class="voucher-row">
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>PAYABLE TO:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-payableTo"></span>
+          </div>
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>DATE:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-date"></span>
+          </div>
+        </div>
+        <div style="height: 15px;"></div>
+        <div class="voucher-row">
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>ADDRESS:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-address"></span>
+          </div>
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>DEPARTMENT:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-department"></span>
+          </div>
+        </div>
+        <div class="voucher-row" style="justify-content: flex-end;">
+          <div class="voucher-label half-width" style="width: 48%; min-width:220px; text-align: right;">
+            <span class="label-text"><b>ACCOUNT CODE:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-accountCode"></span>
+          </div>
+        </div>
+        <div style="height: 15px;"></div>
+        <div class="voucher-row">
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>INVOICE DATE:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-invoiceDate"></span>
+          </div>
+        </div>
+        <div style="height: 15px;"></div>
+        <div class="voucher-row">
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>INVOICE NO:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-invoiceNo"></span>
+          </div>
+        </div>
+        <div style="height: 15px;"></div>
+        <div class="voucher-row">
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>AMOUNT Ghc:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-amount"></span>
+          </div>
+          <div class="voucher-label full-width" style="min-height: 40px;">
+            <span class="label-text"><b>AMOUNT IN WORDS:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-amountInWords"></span>
+          </div>
+        </div>
+        <div class="voucher-row withholding-tax-row" id="preview-withholdingTax-row" style="display: none;">
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>WITHHOLDING TAX:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-withholdingTax"></span>
+          </div>
+        </div>
+        <div style="height: 15px;"></div>
+        <div class="voucher-row">
+          <div class="voucher-label full-width" style="min-height: 60px;">
+            <span class="label-text"><b>TRANSACTION DETAILS:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-transactionDetails"></span>
+          </div>
+        </div>
+        <div style="height: 15px;"></div>
+        <div class="voucher-row cheque-fields" id="preview-cheque-fields">
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>BANK:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-bank"></span>
+          </div>
+          <div class="voucher-label half-width">
+            <span class="label-text"><b>CHEQUE NO.:</b></span>
+            <span class="dots"></span>
+            <span class="input-value" id="preview-chequeNumber"></span>
+          </div>
+        </div>
+        <div class="signature-section">
+          <div class="sig-headings">
+            <span class="sig-label"></span>
+            <span class="sig-heading">Name</span>
+            <span class="sig-heading">Signature</span>
+            <span class="sig-heading">Date</span>
+          </div>
+          <div class="sig-row">
+            <span class="sig-label"><b>REQUESTED BY:</b></span>
+            <div class="sig-name-container">
+              <div class="sig-name-line"></div>
+              <div class="sig-name-text" id="preview-requestedBy"></div>
+            </div>
+            <span class="sig-dots"></span>
+            <span class="sig-dots"></span>
+          </div>
+          <div class="sig-row">
+            <span class="sig-label"><b>REVIEWED BY:</b></span>
+            <div class="sig-name-container">
+              <div class="sig-name-line"></div>
+              <div class="sig-name-text" id="preview-reviewedBy"></div>
+            </div>
+            <span class="sig-dots"></span>
+            <span class="sig-dots"></span>
+          </div>
+          <div class="sig-row">
+            <span class="sig-label"><b>AUTHORISED BY:</b></span>
+            <div class="sig-name-container">
+              <div class="sig-name-line"></div>
+              <div class="sig-name-text" id="preview-authorizedBy"></div>
+            </div>
+            <span class="sig-dots"></span>
+            <span class="sig-dots"></span>
+          </div>
+          <div class="sig-row">
+            <span class="sig-label"><b>RECEIVED BY:</b></span>
+            <div class="sig-name-container">
+              <div class="sig-name-line"></div>
+              <div class="sig-name-text" id="preview-receivedBy"></div>
+            </div>
+            <span class="sig-dots"></span>
+            <span class="sig-dots"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="print-btn" onclick="printVoucher()">Print Voucher</button>
+      <button class="close-modal" onclick="closeVoucherModal()">Close</button>
+    </div>
+  </div>
+</div>

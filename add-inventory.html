@@ -1,0 +1,295 @@
+<div class="inventory-container">
+  <div class="inventory-header">
+    <h1>Add New Inventory</h1>
+  </div>
+
+  <!-- New Inventory Form -->
+  <form id="newInventoryForm" onsubmit="event.preventDefault(); submitNewInventory();">
+    <div class="form-row-two">
+      <div class="form-group">
+        <label for="newCategory">Inventory Category:</label>
+        <select id="newCategory" onchange="handleNewCategoryChange()">
+          <option value="">Select Category</option>
+          <option value="add-new">+ Add New Category</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="newDateOfPurchase">Date of Purchase:</label>
+        <input type="date" id="newDateOfPurchase" required>
+      </div>
+    </div>
+
+    <!-- Add New Category Fields (Hidden by default) -->
+    <div id="addNewCategoryFields" style="display: none;">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="categoryName">Category Name:</label>
+          <input type="text" id="categoryName" placeholder="e.g., Office Supplies">
+        </div>
+        <div class="form-group">
+          <label for="categoryCode">Category Code:</label>
+          <input type="text" id="categoryCode" readonly placeholder="Auto-generated">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="categoryDescription">Description:</label>
+        <textarea id="categoryDescription" placeholder="Category description" rows="2"></textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="newTotalCost">Total Cost (GHc):</label>
+        <input type="number" id="newTotalCost" step="0.01" placeholder="0.00" oninput="calculateUnitPrice()">
+      </div>
+      <div class="form-group">
+        <label for="newQuantity">Quantity:</label>
+        <input type="number" id="newQuantity" step="1" placeholder="0" oninput="calculateUnitPrice()">
+      </div>
+      <div class="form-group">
+        <label for="newUnitPrice">Unit Price (GHc):</label>
+        <input type="number" id="newUnitPrice" step="0.01" readonly placeholder="0.00">
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">
+      <i class="fas fa-plus"></i> Add Inventory
+    </button>
+  </form>
+</div>
+
+<!-- Modal for Messages -->
+<div class="modal" id="messageModal" style="display: none;">
+  <div class="modal-content">
+    <div id="modalMessage"></div>
+    <button class="modal-close-btn" onclick="closeInventoryModal()">Close</button>
+  </div>
+</div>
+
+<style>
+  .inventory-container {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .inventory-header {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #4361ee;
+    padding-bottom: 12px;
+  }
+
+  .inventory-header h1 {
+    color: #2d3748;
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    margin-bottom: 6px;
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+  }
+
+  .form-group input[readonly] {
+    background: #f7fafc;
+    cursor: not-allowed;
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 70px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .form-row-two {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  #addNewCategoryFields {
+    background: #f7fafc;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 15px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    max-width: 250px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #4361ee, #7209b7);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 25px auto 0 auto;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    text-align: center;
+    animation: modalSlideIn 0.3s ease;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  #modalMessage {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #2d3748;
+    line-height: 1.5;
+    min-height: 50px;
+  }
+
+  .modal-close-btn {
+    padding: 10px 28px;
+    background: #4361ee;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .modal-close-btn:hover {
+    background: #3a56d4;
+    transform: translateY(-1px);
+  }
+
+  .success-message {
+    color: #06d6a0;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .error-message {
+    color: #ef476f;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .inventory-container {
+      padding: 20px;
+    }
+
+    .inventory-header h1 {
+      font-size: 20px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .form-row-two {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-size: 13px;
+      padding: 8px 10px;
+    }
+
+    .submit-btn {
+      max-width: 100%;
+      padding: 10px 24px;
+      font-size: 14px;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      padding: 25px;
+    }
+  }
+</style>
